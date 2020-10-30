@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "953375846797",
+    "firebase_url": "https://amlaakapp-ab09a.firebaseio.com",
+    "project_id": "amlaakapp-ab09a",
+    "storage_bucket": "amlaakapp-ab09a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953375846797:android:6071f06a865f82ad5bcdc4",
+        "android_client_info": {
+          "package_name": "com.example.amlaakapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953375846797-lbs35ikedcqsei00f00jfm8jud5c5517.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.amlaakapp",
+            "certificate_hash": "ee868fc2839bb84c2924419cd116696818758837"
+          }
+        },
+        {
+          "client_id": "953375846797-50ngd81htkquudobfku59e3tt12mf0sj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzaT20APO6m5P6Gebk_dNuGRYDnNGzvg8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953375846797-50ngd81htkquudobfku59e3tt12mf0sj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

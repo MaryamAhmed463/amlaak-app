@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.fragment.FuelRateFragment">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/header_without_back"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="95dp" />
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="Fuel prices in the Sultanate of Oman per units"
+        android:textColor="@color/dark_blue"
+        android:textSize="14dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header" />
+
+            <Button
+                android:id="@+id/btn_see_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:text="See All"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                android:background="@android:color/transparent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_title" />
+
+
+            <TextView
+                android:id="@+id/txt_from"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:text="From"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_see_all" />
+
+            <EditText
+                android:id="@+id/et_date_from"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="Pick Date"
+                android:maxLength="30"
+                android:paddingLeft="16dp"
+                android:textSize="12dp"
+                android:imeOptions="actionNext"
+                android:editable="false"
+                android:clickable="true"
+                android:focusable="false"
+                app:layout_constraintStart_toEndOf="@+id/txt_from"
+                app:layout_constraintTop_toBottomOf="@+id/btn_see_all" />
+
+
+            <TextView
+                android:id="@+id/txt_to"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:text="To"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/et_date_from"
+                app:layout_constraintTop_toBottomOf="@+id/btn_see_all" />
+
+    <EditText
+        android:id="@+id/et_to_date"
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/rectangle_white"
+        android:ems="10"
+        android:hint="Pick Date"
+        android:inputType="textPersonName"
+        android:paddingLeft="16dp"
+        android:textSize="12dp"
+        android:imeOptions="actionNext"
+        android:editable="false"
+        android:clickable="true"
+        android:focusable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txt_to"
+        app:layout_constraintTop_toBottomOf="@+id/btn_see_all" />
+
+            <ImageView
+                android:id="@+id/img_fule_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="32dp"
+                android:src="@drawable/fule_ic"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_from" />
+
+            <ImageView
+                android:id="@+id/img_fule_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="6dp"
+                android:src="@drawable/fule_ic"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/img_fule_3" />
+
+            <ImageView
+                android:id="@+id/img_fule_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="6dp"
+                android:src="@drawable/fule_ic"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/img_fule_1" />
+
+            <TextView
+                android:id="@+id/txt_m95"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="45dp"
+                android:text="M95"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/img_fule_1"
+                app:layout_constraintTop_toBottomOf="@+id/et_date_from" />
+
+            <TextView
+                android:id="@+id/txt_m91"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="50dp"
+                android:text="M91"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/img_fule_3"
+                app:layout_constraintTop_toBottomOf="@+id/txt_m95" />
+
+            <TextView
+                android:id="@+id/txt_gasoil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="50dp"
+                android:text="GO   "
+                android:textColor="@color/colorPrimary"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/img_fule_2"
+                app:layout_constraintTop_toBottomOf="@+id/txt_m91" />
+
+            <EditText
+                android:id="@+id/et_m95"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="35dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="000.000"
+                android:inputType="numberDecimal"
+                android:paddingLeft="16dp"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                app:layout_constraintStart_toEndOf="@+id/txt_m95"
+                app:layout_constraintTop_toBottomOf="@+id/et_date_from" />
+
+            <EditText
+                android:id="@+id/et_m91"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="35dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="000.000"
+                android:inputType="numberDecimal"
+                android:paddingLeft="16dp"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                app:layout_constraintStart_toEndOf="@+id/txt_m91"
+                app:layout_constraintTop_toBottomOf="@+id/et_m95" />
+
+            <EditText
+                android:id="@+id/et_gasoil"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="35dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="000.000"
+                android:inputType="numberDecimal"
+                android:paddingLeft="16dp"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                app:layout_constraintStart_toEndOf="@+id/txt_gasoil"
+                app:layout_constraintTop_toBottomOf="@+id/et_m91" />
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/rectangle_button"
+        android:text="Save"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_gasoil" />
+
+    <TextView
+        android:id="@+id/txt_Bz_L_95"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="41dp"
+        android:text="Bz / liter"
+        android:textColor="@color/text_gray"
+        android:textSize="12dp"
+        app:layout_constraintStart_toEndOf="@+id/et_m95"
+        app:layout_constraintTop_toBottomOf="@+id/et_to_date" />
+
+    <TextView
+        android:id="@+id/txt_Bz_L_91"
+        android:layout_width="61dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="55dp"
+        android:text="Bz / liter"
+        android:textColor="@color/text_gray"
+        android:textSize="12dp"
+        app:layout_constraintStart_toEndOf="@+id/et_m91"
+        app:layout_constraintTop_toBottomOf="@+id/txt_Bz_L_95" />
+
+    <TextView
+        android:id="@+id/txt_Bz_L_GO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="55dp"
+        android:text="Bz / liter"
+        android:textColor="@color/text_gray"
+        android:textSize="12dp"
+        app:layout_constraintStart_toEndOf="@+id/et_gasoil"
+        app:layout_constraintTop_toBottomOf="@+id/txt_Bz_L_91" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

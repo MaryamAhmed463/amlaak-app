@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.fragment.AddNewVehicleFragment">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/header" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        app:layout_constraintTop_toBottomOf="@+id/header">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/img_vehicle"
+                android:layout_width="199dp"
+                android:layout_height="123dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/img_bg"
+                android:src="@drawable/img_bg"
+                android:scaleType="fitXY"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btn_add_img"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/add_ic"
+                app:layout_constraintBottom_toBottomOf="@+id/img_vehicle"
+                app:layout_constraintEnd_toEndOf="@+id/img_vehicle"
+                app:layout_constraintStart_toStartOf="@+id/img_vehicle"
+                app:layout_constraintTop_toTopOf="@+id/img_vehicle" />
+
+            <EditText
+                android:id="@+id/et_VCode"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="Vehicle code"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/img_vehicle" />
+
+            <EditText
+                android:id="@+id/et_VName"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="Vehicle name"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_VCode" />
+
+            <EditText
+                android:id="@+id/et_VModel"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="Vehicle model"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_VName" />
+
+            <EditText
+                android:id="@+id/et_VType"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="Vehicle type"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_VModel" />
+
+            <EditText
+                android:id="@+id/et_VTankCapacity"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="Vehicle tank capacity"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_VType" />
+
+            <RadioGroup
+                android:id="@+id/rg_FuelType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/txt_FuelType"
+                app:layout_constraintTop_toBottomOf="@+id/et_VTankCapacity">
+
+                <RadioButton
+                    android:id="@+id/rb_m95"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="20dp"
+                    android:text="M95"
+                    android:textColor="@color/text_gray"
+                    android:checked="true"/>
+
+                <RadioButton
+                    android:id="@+id/rb_m91"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:paddingRight="20dp"
+                    android:text="M91"
+                    android:textColor="@color/text_gray" />
+
+                <RadioButton
+                    android:id="@+id/rb_go"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:paddingRight="20dp"
+                    android:text="GO"
+                    android:textColor="@color/text_gray" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/txt_FuelType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="12dp"
+                android:text="Fuel Type"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_VTankCapacity" />
+
+            <EditText
+                android:id="@+id/et_opening_km"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="Opening km"
+                android:inputType="numberDecimal"
+                android:paddingLeft="20dp"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rg_FuelType" />
+
+            <Spinner
+                android:id="@+id/sp_payment_method"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/rectangle_white"
+                android:paddingLeft="20dp"
+                android:textColor="@color/text_gray"
+                android:textSize="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_opening_km" />
+
+            <TextView
+                android:id="@+id/txt_driver_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Driver Name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sp_payment_method" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_driverName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_driver_name" />
+
+            <Button
+                android:id="@+id/btn_addV"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rectangle_button"
+                android:text="ADD"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rv_driverName" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

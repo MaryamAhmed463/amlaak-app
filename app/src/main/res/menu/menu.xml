@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+    android:id="@+id/users"
+    android:title="Users"
+    android:icon="@drawable/users_ic" />
+
+    <item
+        android:id="@+id/dollar"
+        android:title="Fuel Rate"
+        android:icon="@drawable/fule_rate_ic"/>
+
+    <item
+        android:id="@+id/car"
+        android:title="Vehicles"
+        android:icon="@drawable/vehicles_ic"/>
+
+</menu>
