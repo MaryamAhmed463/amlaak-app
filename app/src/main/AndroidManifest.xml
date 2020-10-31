@@ -15,7 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".view.activity.ManagerMainActivity"></activity>
-        <activity android:name=".view.activity.DriverMainActivity" />
+        <activity android:name=".view.activity.DriverMainActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".view.activity.LoginActivity"
             android:label="Login" />
