@@ -5,13 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +14,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.amlaakapp.MyProgressDialog;
 import com.example.amlaakapp.R;
 import com.example.amlaakapp.model.User;
-import com.example.amlaakapp.model.Vehicles;
+import com.example.amlaakapp.model.VehicleReference;
 import com.example.amlaakapp.view.activity.LoginActivity;
 import com.example.amlaakapp.view.adapter.DisplayUsersAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -240,21 +239,23 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
         final TextView txt_email = dialog.findViewById(R.id.txt_email);
         final TextView txt_vehicles = dialog.findViewById(R.id.txt_vehicle_number);
 
+        txt_UserCode.setText(selecteUser.getsUserCode());
+        txt_UserName.setText(selecteUser.getsFName() + " " + selecteUser.getsSName() + " " + selecteUser.getsLName());
+        txt_phone.setText(selecteUser.getsPhone());
+        txt_email.setText(selecteUser.getsEmail());
+
         final FirebaseDatabase databaseUser = FirebaseDatabase.getInstance();
 
-        DatabaseReference UserRef = databaseUser.getReference("Users" + "/" + selecteUser.getsUserId());
+        DatabaseReference UserRef = databaseUser.getReference("Users").child(selecteUser.getsUserId()).child("sUserVehicle");
 
         UserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                User user = dataSnapshot.getValue(User.class);
-                txt_UserCode.setText(user.getsUserCode());
-                txt_UserName.setText(user.getsFName()+" "+user.getsSName()+" "+user.getsLName());
-                txt_phone.setText(user.getsPhone());
-                txt_email.setText(user.getsEmail());
-               // txt_vehicles.setText(user.getsUserVehicle());
+
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    VehicleReference vr = d.getValue(VehicleReference.class);
+                    txt_vehicles.append(vr.getVid() + ", ");
+                }
             }
 
             @Override
@@ -262,36 +263,35 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
 
             }
 
-
         });
 
-        final FirebaseDatabase DBV = FirebaseDatabase.getInstance();
-        DatabaseReference VRef = DBV.getReference("Vehicles");
-        VRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot postSnapShot : dataSnapshot.getChildren()){
-                    Vehicles vehicles = postSnapShot.getValue(Vehicles.class);
-                        VehicleArrayList.addAll(vehicles.getVdriver());
-
-                        if(VehicleArrayList.contains(selecteUser.getsUserId())){
-                            for(int i=0;i<VehicleArrayList.size();i++){
-                                vlist.add(vehicles.getVCode());
-                        }
-                            txt_vehicles.setText(String.valueOf(vlist));
-                }
-                }
-
-
-//               for(int i=0;i<VehicleArrayList.size();i++){
-//                   txt_vehicles.setText(VehicleArrayList.ge+" - "+VehicleArrayList.get(i).getVName());
-//               }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+//        final FirebaseDatabase DBV = FirebaseDatabase.getInstance();
+//        DatabaseReference VRef = DBV.getReference("Vehicles");
+//        VRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for(DataSnapshot postSnapShot : dataSnapshot.getChildren()){
+//                    Vehicles vehicles = postSnapShot.getValue(Vehicles.class);
+//                        VehicleArrayList.addAll(vehicles.getVdriver());
+//
+//                        if(VehicleArrayList.contains(selecteUser.getsUserId())){
+//                            for(int i=0;i<VehicleArrayList.size();i++){
+//                                vlist.add(vehicles.getVCode());
+//                        }
+//                            txt_vehicles.setText(String.valueOf(vlist));
+//                }
+//                }
+//
+//
+////               for(int i=0;i<VehicleArrayList.size();i++){
+////                   txt_vehicles.setText(VehicleArrayList.ge+" - "+VehicleArrayList.get(i).getVName());
+////               }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//            }
+//        });
 
 
         Button btn_update = dialog.findViewById(R.id.btn_update);

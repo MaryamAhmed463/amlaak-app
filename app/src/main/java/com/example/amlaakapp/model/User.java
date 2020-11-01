@@ -1,8 +1,5 @@
 package com.example.amlaakapp.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class User {
     String sFName;
     String sSName;
@@ -13,7 +10,6 @@ public class User {
     String sCPass;
     String sUserCode;
     String sUserId;
-    List<String> sUserVehicle = new ArrayList<>();
     String sUserRole;
 
     public User() {
@@ -25,14 +21,6 @@ public class User {
 
     public void setsUserRole(String sUserRole) {
         this.sUserRole = sUserRole;
-    }
-
-    public List<String> getsUserVehicle() {
-        return sUserVehicle;
-    }
-
-    public void setsUserVehicle(List<String> sUserVehicle) {
-        this.sUserVehicle = sUserVehicle;
     }
 
     public String getsFName() {

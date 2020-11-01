@@ -34,11 +34,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.amlaakapp.view.adapter.DriverNameAdapter;
 import com.example.amlaakapp.MyProgressDialog;
 import com.example.amlaakapp.R;
 import com.example.amlaakapp.model.User;
+import com.example.amlaakapp.model.VehicleReference;
 import com.example.amlaakapp.model.Vehicles;
+import com.example.amlaakapp.view.adapter.DriverNameAdapter;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -84,6 +85,7 @@ public class AddNewVehicleFragment extends Fragment implements DriverNameAdapter
     private MyProgressDialog myProgressDialog;
 
     private ArrayList<String> driverSelected = new ArrayList();
+    private ArrayList<String> vehicleID = new ArrayList();
 
     private  Context mContext = null;
 
@@ -341,10 +343,38 @@ public class AddNewVehicleFragment extends Fragment implements DriverNameAdapter
                                            vehicles.setVTankCapacity(sVTankCapacity);
                                            vehicles.setVdriver(driverSelected);
 
+                                           // vehicleID.clear();
+
                                            key = databaseReference.push().getKey();
                                            vehicles.setVID(key);
                                            databaseReference.child(key).setValue(vehicles);
 
+
+                                           for (int i = 0; i < driverSelected.size(); i++) {
+                                               final FirebaseDatabase databaseu = FirebaseDatabase.getInstance();
+                                               DatabaseReference userDBRef = databaseu.getReference("Users").child(String.valueOf(driverSelected.get(i)));
+                                               userDBRef.addValueEventListener(new ValueEventListener() {
+                                                   @Override
+                                                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                       User user = dataSnapshot.getValue(User.class);
+                                                       //  vehicleID.addAll(user.getsUserVehicle());
+                                                       // vehicleID.add(key);
+
+                                                       VehicleReference vr = new VehicleReference();
+                                                       vr.setVid(key);
+                                                       databaseu.getReference("Users")
+                                                               .child(user.getsUserId())
+                                                               .child("sUserVehicle")
+                                                               .child(key).setValue(vr);
+                                                   }
+
+                                                   @Override
+                                                   public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                   }
+                                               });
+                                               ///databaseu.getReference("Users").child(String.valueOf(driverSelected.get(i))).child("sUserVehicle").setValue(vehicleID);
+                                           }
 
                                        }
                                    });
@@ -358,21 +388,10 @@ public class AddNewVehicleFragment extends Fragment implements DriverNameAdapter
                                if (task.isSuccessful()) {
                                    Uri downloadUri = task.getResult();
                                    String path = downloadUri.getPath();
+
                                    Toast.makeText(getActivity(), "Added successfully", Toast.LENGTH_LONG).show();
 
-                                   FirebaseDatabase FDB = FirebaseDatabase.getInstance();
-                                   DatabaseReference DBR= FDB.getReference("Users");
-                                   FirebaseStorage FS = FirebaseStorage.getInstance();
 
-                                   for(int i=0; i<driverSelected.size(); i++){
-                                       User user = new User();
-                                       String Vkey = DBR.push().getKey();
-                                       firebaseDatabase.getReference("Users").child(String.valueOf(driverSelected.get(i))).child("sUserVehicle").child("VID").setValue(key);
-
-                                      // DBR.child(String.valueOf(driverSelected.get(i))).child("sUserVehicle").child("VID").setValue(key);
-                                       //DBR.child(driverSelected.get(i)).child("sUserVehicle").child(Vkey).child("VCode").setValue(sVCode);
-                                       //DBR.child(driverSelected.get(i)).child("sUserVehicle").child(Vkey).child("VName").setValue(sVName);
-                                   }
 
                                    img_vehicle.setImageResource(0);
                                    btn_add_img.setVisibility(View.VISIBLE);
