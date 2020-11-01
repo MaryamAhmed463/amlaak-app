@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserSelectionAdapter {
+    TextView txt_vehicles;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -61,7 +63,7 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
     private MyProgressDialog myProgressDialog;
     private Context mContext = null;
 
-   Button btn_add;
+    Button btn_add;
 
     private FirebaseAuth.AuthStateListener authStateListener;
 
@@ -100,7 +102,6 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
             mParam2 = getArguments().getString(ARG_PARAM2);
 
 
-
         }
     }
 
@@ -110,7 +111,7 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_users, container, false);
 
-        TextView txtheader=view.findViewById(R.id.txt_header);
+        TextView txtheader = view.findViewById(R.id.txt_header);
         ImageView imgLogout = view.findViewById(R.id.img_logout);
         txtheader.setText("Users");
 
@@ -155,16 +156,16 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-              //  userArrayList = new ArrayList<>();
+                //  userArrayList = new ArrayList<>();
                 for (DataSnapshot postdataSnapshot : dataSnapshot.getChildren()) {
                     User user = postdataSnapshot.getValue(User.class);
-                    if(user.getsUserRole().equals("DRIVER")){
+                    if (user.getsUserRole().equals("DRIVER")) {
                         Collections.reverse(userArrayList);
                         userArrayList.add(user);
                         Collections.reverse(userArrayList);
                     }
                 }
-                adapter = new DisplayUsersAdapter(getContext(), userArrayList,UsersFragment.this);
+                adapter = new DisplayUsersAdapter(getContext(), userArrayList, UsersFragment.this);
                 recyclerView.setAdapter(adapter);
 
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -192,17 +193,16 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
         return view;
     }
 
-    private void logout(){
+    private void logout() {
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                if(firebaseUser != null){
+                if (firebaseUser != null) {
                     //Log.d(TAG,"on auth state changed",firebaseUser.getUid());
-                }
-                else{
-                    Toast.makeText(getContext(),"You have logout",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "You have logout", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -221,15 +221,50 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
     @Override
     public void onStop() {
         super.onStop();
-        if(authStateListener != null){
+        if (authStateListener != null) {
             FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
         }
     }
 
 
+
+
+    void readVR(final User selecteUser){
+        final FirebaseDatabase databaseUser = FirebaseDatabase.getInstance();
+        DatabaseReference UserRef2 = databaseUser.getReference("Users").child(selecteUser.getsUserId()).child("sUserVehicle");
+        Log.d("fblog", selecteUser.getsUserId());
+
+        UserRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String s = "";
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    VehicleReference vr = d.getValue(VehicleReference.class);
+                    s += vr.getVid() + " ";
+                }
+
+                showDialog(selecteUser, s);
+
+                // dialog.show();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("fblog", databaseError.toString());
+            }
+
+        });
+    }
+
     @Override
     public void onUserSelected(final User selecteUser) {
 
+        readVR(selecteUser);
+
+    }
+
+    private void showDialog(final User selecteUser, String vehiclesList) {
         final Dialog dialog = new Dialog(mContext);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.setContentView(R.layout.dialog_user_detail);
@@ -237,33 +272,15 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
         final TextView txt_UserName = dialog.findViewById(R.id.txt_user_name);
         final TextView txt_phone = dialog.findViewById(R.id.txt_user_phone);
         final TextView txt_email = dialog.findViewById(R.id.txt_email);
-        final TextView txt_vehicles = dialog.findViewById(R.id.txt_vehicle_number);
+        txt_vehicles = dialog.findViewById(R.id.txt_vehicle_number);
 
         txt_UserCode.setText(selecteUser.getsUserCode());
         txt_UserName.setText(selecteUser.getsFName() + " " + selecteUser.getsSName() + " " + selecteUser.getsLName());
         txt_phone.setText(selecteUser.getsPhone());
         txt_email.setText(selecteUser.getsEmail());
+        txt_vehicles .setText(vehiclesList);
 
-        final FirebaseDatabase databaseUser = FirebaseDatabase.getInstance();
 
-        DatabaseReference UserRef = databaseUser.getReference("Users").child(selecteUser.getsUserId()).child("sUserVehicle");
-
-        UserRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    VehicleReference vr = d.getValue(VehicleReference.class);
-                    txt_vehicles.append(vr.getVid() + ", ");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-        });
 
 //        final FirebaseDatabase DBV = FirebaseDatabase.getInstance();
 //        DatabaseReference VRef = DBV.getReference("Vehicles");
@@ -310,14 +327,14 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
 
                 DatabaseReference UserRef = databaseUser2.getReference("Users" + "/" + selecteUser.getsUserId());
 
-                UserRef.addValueEventListener(new ValueEventListener() {
+                UserRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // This method is called once with the initial value and again
                         // whenever data at this location is updated.
                         User user = dataSnapshot.getValue(User.class);
                         et_user_code.setText(user.getsUserCode());
-                        et_user_name.setText(user.getsFName()+" "+user.getsSName()+" "+user.getsLName());
+                        et_user_name.setText(user.getsFName() + " " + user.getsSName() + " " + user.getsLName());
                         et_user_phone.setText(user.getsPhone());
                         et_user_email.setText(user.getsEmail());
                     }
@@ -329,10 +346,12 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
 
 
                 });
-                dialogU.show();
-                dialog.dismiss();
+
+
+             //   dialog.dismiss();
             }
         });
+
 
         dialog.show();
     }
