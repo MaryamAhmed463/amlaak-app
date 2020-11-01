@@ -229,7 +229,7 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
 
 
 
-    void readVR(final User selecteUser){
+    void readVehicleReference(final User selecteUser){
         final FirebaseDatabase databaseUser = FirebaseDatabase.getInstance();
         DatabaseReference UserRef2 = databaseUser.getReference("Users").child(selecteUser.getsUserId()).child("sUserVehicle");
         Log.d("fblog", selecteUser.getsUserId());
@@ -260,7 +260,7 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
     @Override
     public void onUserSelected(final User selecteUser) {
 
-        readVR(selecteUser);
+        readVehicleReference(selecteUser);
 
     }
 
