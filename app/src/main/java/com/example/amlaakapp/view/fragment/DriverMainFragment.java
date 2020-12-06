@@ -1,15 +1,14 @@
 package com.example.amlaakapp.view.fragment;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.amlaakapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -72,6 +71,10 @@ public class DriverMainFragment extends Fragment {
         bottomNavigationView = view.findViewById(R.id.bottomNavDriver);
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavMethod);
         bottomNavigationView.setSelectedItemId(R.id.dollar);
+
+        fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.DriverMainContainer, new BillDriverFragment()).commit();
+
         return view;
     }
 
@@ -103,5 +106,6 @@ public class DriverMainFragment extends Fragment {
             };
 
     public interface OnFragmentInteractionListener {
+
     }
 }

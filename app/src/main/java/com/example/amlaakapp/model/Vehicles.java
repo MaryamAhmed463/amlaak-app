@@ -1,11 +1,8 @@
 package com.example.amlaakapp.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Vehicles {
     String VID,VCode,VName,VType,VFuelType,VTankCapacity,VOpeningKm,VImageUrl,VModel,VPaymentMethod;
-    List<String> Vdriver = new ArrayList<>();
+    //List<String> Vdriver = new ArrayList<>();
 
     public String getVID() {
         return VID;
@@ -87,11 +84,11 @@ public class Vehicles {
         this.VPaymentMethod = VPaymentMethod;
     }
 
-    public List<String> getVdriver() {
-        return Vdriver;
-    }
+    //public List<String> getVdriver() {
+    //  return Vdriver;
+    //}
 
-    public void setVdriver(List<String> vdriver) {
-        Vdriver = vdriver;
-    }
+    //public void setVdriver(List<String> vdriver) {
+    //  Vdriver = vdriver;
+    //}
 }

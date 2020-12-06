@@ -1,12 +1,11 @@
 package com.example.amlaakapp.view.fragment;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.amlaakapp.R;
 
@@ -61,6 +60,7 @@ public class ManagerMainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_manager_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_manager_main, container, false);
+        return view;
     }
 }

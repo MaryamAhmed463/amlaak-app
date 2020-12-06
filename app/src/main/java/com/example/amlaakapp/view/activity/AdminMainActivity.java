@@ -1,10 +1,5 @@
 package com.example.amlaakapp.view.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -19,16 +14,21 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
-import com.example.amlaakapp.view.fragment.AdminMainFragment;
-import com.example.amlaakapp.view.fragment.CarsFragment;
-import com.example.amlaakapp.view.fragment.FuelRateFragment;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.example.amlaakapp.R;
-import com.example.amlaakapp.view.fragment.SeeAllFuelRateFragment;
-import com.example.amlaakapp.view.fragment.UsersFragment;
 import com.example.amlaakapp.model.User;
 import com.example.amlaakapp.model.Vehicles;
 import com.example.amlaakapp.view.fragment.AddNewUserFragment;
 import com.example.amlaakapp.view.fragment.AddNewVehicleFragment;
+import com.example.amlaakapp.view.fragment.AdminMainFragment;
+import com.example.amlaakapp.view.fragment.CarsFragment;
+import com.example.amlaakapp.view.fragment.FuelRateFragment;
+import com.example.amlaakapp.view.fragment.SeeAllFuelRateFragment;
+import com.example.amlaakapp.view.fragment.UsersFragment;
 
 import java.util.List;
 
@@ -110,7 +110,7 @@ public class AdminMainActivity extends AppCompatActivity implements
 
             // set the custom dialog components - text and button
             TextView txtTitle = dialog.findViewById(R.id.txt_title);
-            txtTitle.setText("EXIT");
+            txtTitle.setText("Logout");
             //TextView txtMessage = dialog.findViewById(R.id.txt_message);
             //txtMessage.setText(R.string.exit_message);
 

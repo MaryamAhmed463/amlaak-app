@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.amlaakapp.MyProgressDialog;
 import com.example.amlaakapp.R;
 import com.example.amlaakapp.model.User;
+import com.example.amlaakapp.model.UserReference;
 import com.example.amlaakapp.model.VehicleReference;
 import com.example.amlaakapp.model.Vehicles;
 import com.example.amlaakapp.view.adapter.DriverNameAdapter;
@@ -93,7 +94,7 @@ public class AddNewVehicleFragment extends Fragment implements DriverNameAdapter
     private static final int PERMISSION_REQUEST_CODE = 200;
 
     private DriverNameAdapter driverNameAdapter;
-    private String FT;
+    private String FT = "";
     private String key;
 
     FirebaseStorage firebaseStorage;
@@ -160,15 +161,13 @@ public class AddNewVehicleFragment extends Fragment implements DriverNameAdapter
         et_VTankCapacity = view.findViewById(R.id.et_VTankCapacity);
         et_VOpeningKm = view.findViewById(R.id.et_opening_km);
 
-
-
-        int getSelected = rgFuelType.getCheckedRadioButtonId();
-        rbSelect = view.findViewById(getSelected);
+//        int getSelected = rgFuelType.getCheckedRadioButtonId();
+//        rbSelect = view.findViewById(getSelected);
 
         rgFuelType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch(checkedId){
+                switch (checkedId) {
                     case R.id.rb_m95:
                         // do operations specific to this selection
                         FT = "M95";
@@ -195,6 +194,7 @@ public class AddNewVehicleFragment extends Fragment implements DriverNameAdapter
         paymentMethod.add("E-Fill");
         paymentMethod.add("Card");
         paymentMethod.add("VRS");
+        paymentMethod.add("Cash");
         ArrayAdapter<String> dataAdapter;
         dataAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_item,paymentMethod);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -291,12 +291,12 @@ public class AddNewVehicleFragment extends Fragment implements DriverNameAdapter
                    final String sVName = et_VName.getText().toString();
                    final String sVModel = et_VModel.getText().toString();
                    final String sVType = et_VType.getText().toString();
-                   final String sVFuelType = rbSelect.getText().toString();
+                   // final String sVFuelType = rbSelect.getText().toString();
                    final String sVOppeningKm = et_VOpeningKm.getText().toString();
                    final String sVTankCapacity = et_VTankCapacity.getText().toString();
                    //item for payment method
                    if (TextUtils.isEmpty(sVCode) || TextUtils.isEmpty(sVName) || TextUtils.isEmpty(sVModel) ||
-                           TextUtils.isEmpty(sVType) ||   TextUtils.isEmpty(sVFuelType) || TextUtils.isEmpty(sVOppeningKm)
+                           TextUtils.isEmpty(sVType) || TextUtils.isEmpty(FT) || TextUtils.isEmpty(sVOppeningKm)
                            || TextUtils.isEmpty(sVTankCapacity) || TextUtils.isEmpty(item) || driverSelected.isEmpty()) {
                        Toast.makeText(getContext(),"Please fill all field",Toast.LENGTH_LONG).show();
                        myProgressDialog.dismissDialog();
@@ -341,9 +341,36 @@ public class AddNewVehicleFragment extends Fragment implements DriverNameAdapter
                                            vehicles.setVOpeningKm(sVOppeningKm);
                                            vehicles.setVPaymentMethod(item);
                                            vehicles.setVTankCapacity(sVTankCapacity);
-                                           vehicles.setVdriver(driverSelected);
+                                           // vehicles.setVdriver(driverSelected);
+                                           for (int i = 0; i < driverSelected.size(); i++) {
+                                               final FirebaseDatabase databaseu = FirebaseDatabase.getInstance();
+                                               final DatabaseReference userDBRef = databaseu.getReference("Users").child(String.valueOf(driverSelected.get(i)));
+                                               userDBRef.addValueEventListener(new ValueEventListener() {
+                                                   @Override
+                                                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                       User user = dataSnapshot.getValue(User.class);
+                                                       UserReference userReference = new UserReference();
+                                                       String uid = user.getsUserId();
+                                                       String ufn = user.getsFName();
+                                                       String usn = user.getsSName();
+                                                       String uln = user.getsLName();
+                                                       userReference.setUID(uid);
+                                                       userReference.setUFName(ufn);
+                                                       userReference.setUSName(usn);
+                                                       userReference.setULName(uln);
+                                                       databaseu.getReference("Vehicles")
+                                                               .child(key)
+                                                               .child("vdriver")
+                                                               .child(user.getsUserId()).setValue(userReference);
+                                                   }
 
-                                           // vehicleID.clear();
+                                                   @Override
+                                                   public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                   }
+                                               });
+                                               ///databaseu.getReference("Users").child(String.valueOf(driverSelected.get(i))).child("sUserVehicle").setValue(vehicleID);
+                                           }
 
                                            key = databaseReference.push().getKey();
                                            vehicles.setVID(key);
@@ -352,16 +379,16 @@ public class AddNewVehicleFragment extends Fragment implements DriverNameAdapter
 
                                            for (int i = 0; i < driverSelected.size(); i++) {
                                                final FirebaseDatabase databaseu = FirebaseDatabase.getInstance();
-                                               DatabaseReference userDBRef = databaseu.getReference("Users").child(String.valueOf(driverSelected.get(i)));
+                                               final DatabaseReference userDBRef = databaseu.getReference("Users").child(String.valueOf(driverSelected.get(i)));
                                                userDBRef.addValueEventListener(new ValueEventListener() {
                                                    @Override
                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                        User user = dataSnapshot.getValue(User.class);
-                                                       //  vehicleID.addAll(user.getsUserVehicle());
-                                                       // vehicleID.add(key);
 
                                                        VehicleReference vr = new VehicleReference();
                                                        vr.setVid(key);
+                                                       vr.setVcode(sVCode);
+                                                       vr.setVname(sVName);
                                                        databaseu.getReference("Users")
                                                                .child(user.getsUserId())
                                                                .child("sUserVehicle")

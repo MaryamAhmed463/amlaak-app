@@ -5,11 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +13,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.example.amlaakapp.MyProgressDialog;
 import com.example.amlaakapp.R;
 import com.example.amlaakapp.model.User;
+import com.example.amlaakapp.model.VehicleReference;
 import com.example.amlaakapp.view.activity.LoginActivity;
-import com.example.amlaakapp.view.adapter.DisplayUsersAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,8 +28,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.Collections;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,8 +47,10 @@ public class ProfileDriverFragment extends Fragment {
 
     MyProgressDialog myProgressDialog;
 
-    private TextView txt_DCode , txt_DName , txt_DPhone , txt_DEmail;
+    ValueEventListener listener;
     private FirebaseAuth.AuthStateListener authStateListener;
+    DatabaseReference databaseReference;
+    private TextView txt_DCode, txt_DName, txt_DPhone, txt_DEmail, txt_DVehicle;
 
     public ProfileDriverFragment() {
         // Required empty public constructor
@@ -126,6 +124,7 @@ public class ProfileDriverFragment extends Fragment {
         txt_DName = view.findViewById(R.id.txt_DName);
         txt_DPhone = view.findViewById(R.id.txt_DPhone);
         txt_DEmail = view.findViewById(R.id.txt_DEmail);
+        txt_DVehicle = view.findViewById(R.id.txt_driverVehicle);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference userDBRef = database.getReference("Users"+ "/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -134,10 +133,27 @@ public class ProfileDriverFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 txt_DCode.setText(user.getsUserCode());
-                txt_DName.setText(user.getsFName()+" "+user.getsSName()+" "+user.getsLName());
+                txt_DName.setText(user.getsFName() + " " + user.getsSName() + " " + user.getsLName());
                 txt_DPhone.setText(user.getsPhone());
                 txt_DEmail.setText(user.getsEmail());
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("sUserVehicle");
+        listener = databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String s = " ";
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
+                    VehicleReference vr = item.getValue(VehicleReference.class);
+                    s += vr.getVcode() + " - " + vr.getVname() + "\n";
+                }
+                txt_DVehicle.setText(s);
             }
 
             @Override
@@ -171,4 +187,19 @@ public class ProfileDriverFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
+        }
+    }
+
 }

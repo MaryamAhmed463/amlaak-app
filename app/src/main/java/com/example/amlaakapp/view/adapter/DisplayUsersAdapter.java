@@ -15,8 +15,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.amlaakapp.R;
-import com.example.amlaakapp.view.fragment.UsersFragment;
 import com.example.amlaakapp.model.User;
+import com.example.amlaakapp.view.fragment.UsersFragment;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -26,6 +26,7 @@ public class DisplayUsersAdapter extends RecyclerView.Adapter<DisplayUsersAdapte
 
     private List<User> userList;
     private Context context1;
+
     public interface UserSelectionAdapter {
         // TODO: Update argument type and name
         void onUserSelected(User selecteUser);
