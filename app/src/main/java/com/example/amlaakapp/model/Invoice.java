@@ -11,6 +11,49 @@ public class Invoice {
     String invoiceID;
     Double volume, amount, vkm;
     String vID;
+    String unitPrice;
+    String DID, DFN, DSN, DLN;
+
+    public String getDID() {
+        return DID;
+    }
+
+    public void setDID(String DID) {
+        this.DID = DID;
+    }
+
+    public String getDFN() {
+        return DFN;
+    }
+
+    public void setDFN(String DFN) {
+        this.DFN = DFN;
+    }
+
+    public String getDSN() {
+        return DSN;
+    }
+
+    public void setDSN(String DSN) {
+        this.DSN = DSN;
+    }
+
+    public String getDLN() {
+        return DLN;
+    }
+
+    public void setDLN(String DLN) {
+        this.DLN = DLN;
+    }
+
+    public String getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(String unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
 
     public String getInvoiceID() {
         return invoiceID;

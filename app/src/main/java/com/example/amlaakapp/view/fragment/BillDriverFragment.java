@@ -35,7 +35,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.amlaakapp.MyProgressDialog;
 import com.example.amlaakapp.R;
+import com.example.amlaakapp.model.FuleRate;
 import com.example.amlaakapp.model.Invoice;
+import com.example.amlaakapp.model.User;
 import com.example.amlaakapp.model.VehicleReference;
 import com.example.amlaakapp.model.Vehicles;
 import com.example.amlaakapp.view.activity.LoginActivity;
@@ -106,6 +108,11 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
 
     String item, vehicleItem;
     String stationitem;
+    String unitPrice;
+    String uid = " ";
+    String ufn = " ";
+    String usn = " ";
+    String uln = " ";
     Double logtitude, latitude;
     FusedLocationProviderClient client;
     Location currentLocation;
@@ -205,6 +212,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
         et_recipt.setEnabled(false);
         et_km.setEnabled(true);
 
+
         sp_paymentMethod.setEnabled(false);
         img_edit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,6 +239,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                             Vehicles vehicles = postdataSnapshot.getValue(Vehicles.class);
                             if (vehicles.getVCode().equals(vehicleItem)) {
                                 txt_ftvalue.setText(vehicles.getVFuelType());
+                                getUnitPrice(vehicles.getVFuelType());
                                 VPM = vehicles.getVPaymentMethod();
                                 txt_VPM.setText(VPM);
                                 //sp_paymentMethod.setSelection(adapter.getPosition(VPM));
@@ -251,6 +260,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
             }
         });
         ///////////////////////////////
+
 
         Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -320,6 +330,12 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                 takeImageFromCamera();
             }
         });
+        img_attechkm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takeImageFromCamera();
+            }
+        });
 
         client = LocationServices.getFusedLocationProviderClient(getActivity());
         fetchLastLocation();
@@ -371,30 +387,64 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                                         public void onSuccess(final Uri uri) {
                                             Log.d("TAG", uri.toString());
 
-                                            Invoice invoice = new Invoice();
+                                            final Invoice invoice = new Invoice();
 
                                             invoice.setInvoiceImgUrl(uri.toString());
                                             invoice.setAmount(Double.valueOf(amount));
                                             invoice.setVolume(Double.valueOf(volume));
                                             invoice.setDate(date);
                                             invoice.setFuleType(fuleType);
+                                            invoice.setUnitPrice(unitPrice);
                                             invoice.setLatitude(String.valueOf(latitude));
                                             invoice.setLongitude(String.valueOf(logtitude));
                                             invoice.setStation(station);
                                             invoice.setvCode(vCode);
+                                            invoice.setDFN(" ");
+                                            invoice.setDSN(" ");
+                                            invoice.setDLN(" ");
+                                            invoice.setDID(" ");
                                             invoice.setVkm(Double.valueOf(km));
                                             if (sp_paymentMethod.isEnabled()) {
                                                 invoice.setPaymentMethode(paymentMethodUpdate);
                                             } else {
                                                 invoice.setPaymentMethode(paymentMethod);
                                             }
+                                            final String key = databaseReference1.push().getKey();
+                                            invoice.setInvoiceID(key);
 
                                             //////////adding driver name to invoice/////////////////////
+                                            final FirebaseDatabase databaseu = FirebaseDatabase.getInstance();
+                                            final DatabaseReference userDBRef = databaseu.getReference("Users" + "/" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                            userDBRef.addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    User user = dataSnapshot.getValue(User.class);
+                                                    uid = user.getsUserId();
+                                                    ufn = user.getsFName();
+                                                    usn = user.getsSName();
+                                                    uln = user.getsLName();
 
+                                                    databaseu.getReference("Invoice")
+                                                            .child(key)
+                                                            .child("dfn").setValue(ufn);
+                                                    databaseu.getReference("Invoice")
+                                                            .child(key)
+                                                            .child("dsn").setValue(usn);
+                                                    databaseu.getReference("Invoice")
+                                                            .child(key)
+                                                            .child("dln").setValue(uln);
+                                                    databaseu.getReference("Invoice")
+                                                            .child(key)
+                                                            .child("did").setValue(uid);
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
                                             ///////////////////////////////////////////////////////////
-
-                                            String key = databaseReference1.push().getKey();
-                                            invoice.setInvoiceID(key);
                                             databaseReference1.child(key).setValue(invoice);
 
                                         }
@@ -434,6 +484,58 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
         });
 
         return view;
+    }
+
+    private void getUnitPrice(final String fuelType) {
+        ////////////checking fuel type///////////////////
+        String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        String[] items1 = currentDate.split("/");
+        String d1 = items1[0];
+        final String m1 = items1[1];
+        final String y1 = items1[2];
+        int d = Integer.parseInt(d1);
+        final int m = Integer.parseInt(m1);
+        final int y = Integer.parseInt(y1);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("FuleRate");
+
+        myRef.orderByChild("date_from").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<FuleRate> fuleRatesArrayList = new ArrayList<>();
+                for (DataSnapshot postdataSnapshot : dataSnapshot.getChildren()) {
+                    FuleRate fuleRate = postdataSnapshot.getValue(FuleRate.class);
+
+                    String fd = fuleRate.getDate_from();
+                    String[] items1 = fd.split("/");
+                    String d2 = items1[0];
+                    String m2 = items1[1];
+                    String y2 = items1[2];
+                    int from_d = Integer.parseInt(d2);
+                    int from_m = Integer.parseInt(m2);
+                    int from_y = Integer.parseInt(y2);
+
+                    if (m1.equals(m2) && y1.equals(y2)) {
+                        if (fuelType.equals("GasOil")) {
+                            unitPrice = fuleRate.getRate_go();
+                        } else if (fuelType.equals("M95")) {
+                            unitPrice = fuleRate.getRate_m95();
+                        } else if (fuelType.equals("M91")) {
+                            unitPrice = fuleRate.getRate_m91();
+                        }
+                    }
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        ////////////////////////////////////////////////
     }
 
     private void fetchLastLocation() {
