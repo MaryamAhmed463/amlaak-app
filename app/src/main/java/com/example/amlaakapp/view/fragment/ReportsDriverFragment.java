@@ -177,10 +177,39 @@ public class ReportsDriverFragment extends Fragment {
         /////display vehicle that this driver drive it in a spinner/////
         vehiclList = new ArrayList<>();
         vehiclList.add(0, "All");
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("sUserVehicle");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, vehiclList);
         sp_vehicle.setAdapter(adapter);
         readingVehicleCodeForCurrentDriver();
+
+        databaseReference1 = FirebaseDatabase.getInstance().getReference("Invoice");
+        databaseReference1.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot post : dataSnapshot.getChildren()) {
+                    Invoice invoice = post.getValue(Invoice.class);
+                    if (invoice.getDID() == FirebaseAuth.getInstance().getCurrentUser().getUid()) {
+                        Collections.reverse(invoiceArrayList);
+                        invoiceArrayList.add(invoice);
+                        Collections.reverse(invoiceArrayList);
+                    }
+
+                }
+                driverInvoiceAdapter = new DriverInvoiceAdapter(getContext(), invoiceArrayList);
+                rv_invoice.setAdapter(driverInvoiceAdapter);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                rv_invoice.setLayoutManager(linearLayoutManager);
+                myProgressDialog.dismissDialog();
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
         sp_vehicle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -199,9 +228,12 @@ public class ReportsDriverFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for (DataSnapshot post : dataSnapshot.getChildren()) {
                                 Invoice invoice = post.getValue(Invoice.class);
-                                Collections.reverse(invoiceArrayList);
-                                invoiceArrayList.add(invoice);
-                                Collections.reverse(invoiceArrayList);
+                                if (invoice.getDID() == FirebaseAuth.getInstance().getCurrentUser().getUid()) {
+                                    Collections.reverse(invoiceArrayList);
+                                    invoiceArrayList.add(invoice);
+                                    Collections.reverse(invoiceArrayList);
+                                }
+
                             }
                             driverInvoiceAdapter = new DriverInvoiceAdapter(getContext(), invoiceArrayList);
                             rv_invoice.setAdapter(driverInvoiceAdapter);
@@ -350,7 +382,7 @@ public class ReportsDriverFragment extends Fragment {
 
     private void readingVehicleCodeForCurrentDriver() {
 
-        listener = databaseReference.addValueEventListener(new ValueEventListener() {
+        listener = databaseReference.child("sUserVehicle").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 

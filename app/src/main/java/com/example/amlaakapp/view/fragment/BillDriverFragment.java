@@ -1,6 +1,7 @@
 package com.example.amlaakapp.view.fragment;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,7 +14,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -51,6 +55,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -60,6 +65,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.ml.vision.FirebaseVision;
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.text.FirebaseVisionText;
+import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -108,11 +117,14 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
 
     String item, vehicleItem;
     String stationitem;
-    String unitPrice;
+    final Calendar calendar = Calendar.getInstance();
+    String unitPrice = "";
     String uid = " ";
     String ufn = " ";
     String usn = " ";
     String uln = " ";
+    Double uPrice;
+    Boolean img_km = false;
     Double logtitude, latitude;
     FusedLocationProviderClient client;
     Location currentLocation;
@@ -122,6 +134,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
     private Spinner sp_vehicle, sp_station, sp_paymentMethod;
     private MyProgressDialog myProgressDialog;
     private Bitmap bitmap;
+    Boolean img_invoice = false;
 
     public BillDriverFragment() {
         // Required empty public constructor
@@ -152,6 +165,39 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+    }
+
+    TextWatcher textWatcher = new TextWatcher() {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+            if (!TextUtils.isEmpty(et_volume.getText().toString().trim())) {
+
+                Double answer = Double.parseDouble(et_volume.getText().toString()) * Double.parseDouble(unitPrice);
+                Log.e("RESULT", String.valueOf(answer));
+                et_amount.setText(String.valueOf(answer));
+            } else {
+                et_amount.setText("");
+            }
+        }
+    };
+
+    private void updateLabel() {
+        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        et_currentDate.setText(sdf.format(calendar.getTime()));
     }
 
     @Override
@@ -208,12 +254,36 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
         txt_VPM = view.findViewById(R.id.txt_VPM);
         img_edit = view.findViewById(R.id.img_edit);
 
-        et_currentDate.setEnabled(false);
+
         et_recipt.setEnabled(false);
-        et_km.setEnabled(true);
-
-
+        et_km.setEnabled(false);
         sp_paymentMethod.setEnabled(false);
+        et_amount.setEnabled(false);
+
+        final DatePickerDialog.OnDateSetListener date_from = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, monthOfYear);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+        };
+        et_currentDate.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                new DatePickerDialog(getActivity(), date_from, calendar
+                        .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
         img_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -327,15 +397,22 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
         img_attachRecipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                img_invoice = true;
                 takeImageFromCamera();
             }
         });
+
         img_attechkm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takeImageFromCamera();
+                img_km = true;
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, 101);
             }
         });
+
+
+        et_volume.addTextChangedListener(textWatcher);
 
         client = LocationServices.getFusedLocationProviderClient(getActivity());
         fetchLastLocation();
@@ -403,6 +480,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                                             invoice.setDSN(" ");
                                             invoice.setDLN(" ");
                                             invoice.setDID(" ");
+                                            invoice.setConfirmation("Pending");
                                             invoice.setVkm(Double.valueOf(km));
                                             if (sp_paymentMethod.isEnabled()) {
                                                 invoice.setPaymentMethode(paymentMethodUpdate);
@@ -488,7 +566,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
 
     private void getUnitPrice(final String fuelType) {
         ////////////checking fuel type///////////////////
-        String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        String currentDate = et_currentDate.getText().toString();
         String[] items1 = currentDate.split("/");
         String d1 = items1[0];
         final String m1 = items1[1];
@@ -512,6 +590,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                     String d2 = items1[0];
                     String m2 = items1[1];
                     String y2 = items1[2];
+
                     int from_d = Integer.parseInt(d2);
                     int from_m = Integer.parseInt(m2);
                     int from_y = Integer.parseInt(y2);
@@ -537,6 +616,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
         });
         ////////////////////////////////////////////////
     }
+
 
     private void fetchLastLocation() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -666,25 +746,54 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 2 && resultCode == RESULT_OK) {
-            Bundle bundle = data.getExtras();
-            bitmap = (Bitmap) bundle.get("data");
-            // img_attachRecipt.setImageBitmap(bitmap);
-            et_recipt.setText("attached done");
-            et_recipt.setTextColor(this.getResources().getColor(R.color.green));
+        if (img_invoice) {
+            if (requestCode == 2 && resultCode == RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                bitmap = (Bitmap) bundle.get("data");
+                // img_attachRecipt.setImageBitmap(bitmap);
+                et_recipt.setText("attached done");
+                et_recipt.setTextColor(this.getResources().getColor(R.color.green));
 
-        } else if (requestCode == 1 && resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                //img_attachRecipt.setImageBitmap(bitmap);
-                //et_recipt.setText(uri.toString());
+            } else if (requestCode == 1 && resultCode == RESULT_OK) {
+                Uri uri = data.getData();
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                    //img_attachRecipt.setImageBitmap(bitmap);
+                    //et_recipt.setText(uri.toString());
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_SHORT).show();
+                }
             }
         }
+        if (img_km) {
+            Bundle bundle1 = data.getExtras();
+            Bitmap bitmap1 = (Bitmap) bundle1.get("data");
+
+            FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(bitmap1);
+            FirebaseVision firebaseVision = FirebaseVision.getInstance();
+            FirebaseVisionTextRecognizer firebaseVisionTextRecognizer = firebaseVision.getOnDeviceTextRecognizer();
+            Task<FirebaseVisionText> task1 = firebaseVisionTextRecognizer.processImage(firebaseVisionImage);
+            task1.addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                @Override
+                public void onSuccess(FirebaseVisionText firebaseVisionText) {
+
+                    String s = firebaseVisionText.getText().replace(",", ".");
+                    String s2 = s.replace("l", "1");
+
+                    et_km.setText(s2);
+                }
+            });
+            task1.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
     }
 
     private void logout() {
@@ -733,6 +842,5 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
             FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
         }
     }
-
 
 }

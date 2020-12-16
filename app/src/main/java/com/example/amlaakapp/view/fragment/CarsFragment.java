@@ -302,6 +302,7 @@ public class CarsFragment extends Fragment implements VehiclesAdapter.VehicleSel
                 RadioButton m95 = dialog.findViewById(R.id.rb_m95);
                 RadioButton m91 = dialog.findViewById(R.id.rb_m91);
                 RadioButton go = dialog.findViewById(R.id.rb_go);
+
                 FT = selecteVehicle.getVFuelType();
                 if (FT.equals("M95")) {
                     m95.setChecked(true);
@@ -369,7 +370,7 @@ public class CarsFragment extends Fragment implements VehiclesAdapter.VehicleSel
                         ///////update vehicle detail in users/////
                         final FirebaseDatabase dbu = FirebaseDatabase.getInstance();
                         DatabaseReference ref = dbu.getReference("Users");
-                        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        ref.child("sUserVehicle").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 for (DataSnapshot d : dataSnapshot.getChildren()) {

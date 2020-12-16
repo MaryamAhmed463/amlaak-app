@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.amlaakapp.R;
 import com.example.amlaakapp.model.Invoice;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class DriverInvoiceAdapter extends RecyclerView.Adapter<DriverInvoiceAdapter.ViewHolder> {
@@ -40,7 +41,11 @@ public class DriverInvoiceAdapter extends RecyclerView.Adapter<DriverInvoiceAdap
         holder.txt_date.setText(invoice.getDate());
         holder.txt_station.setText(invoice.getStation());
         holder.txt_volume.setText(String.valueOf(invoice.getVolume()));
-        holder.txt_amount.setText(String.valueOf(invoice.getAmount()));
+
+        double number = invoice.getAmount();
+        DecimalFormat numberFormat = new DecimalFormat("###.000");
+
+        holder.txt_amount.setText(numberFormat.format(number));
         holder.txt_VCode.setText(invoice.getvCode());
 
     }
