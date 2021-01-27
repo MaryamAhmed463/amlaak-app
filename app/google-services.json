@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:953375846797:android:6071f06a865f82ad5bcdc4",
         "android_client_info": {
-          "package_name": "com.example.amlaakapp"
+          "package_name": "com.amlaakoman.amlaakapp"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "953375846797-lbs35ikedcqsei00f00jfm8jud5c5517.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.amlaakapp",
+            "package_name": "com.amlaakoman.amlaakapp",
             "certificate_hash": "ee868fc2839bb84c2924419cd116696818758837"
           }
         },

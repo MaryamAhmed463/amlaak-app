@@ -130,6 +130,8 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginLeft="2dp"
                 android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 android:background="@drawable/rectangle_white"
                 android:clickable="true"
                 android:editable="false"
@@ -140,21 +142,8 @@
                 android:inputType="textPersonName"
                 android:paddingLeft="16dp"
                 android:textSize="12dp"
-                app:layout_constraintStart_toEndOf="@+id/txt_to"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/img_search"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:src="@drawable/ic_search"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/et_to_date"
+                app:layout_constraintStart_toEndOf="@+id/txt_to"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -171,7 +160,7 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_date_from" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_search" />
 
             <TextView
                 android:id="@+id/txt_TV"
@@ -182,21 +171,21 @@
                 android:textColor="@color/yellow"
                 android:textSize="14dp"
                 app:layout_constraintStart_toEndOf="@+id/txt_totalVolume"
-                app:layout_constraintTop_toBottomOf="@+id/et_date_from" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_search" />
 
             <TextView
                 android:id="@+id/txt_TotalAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginLeft="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
                 android:text="Total Amount : "
                 android:textColor="@color/yellow"
                 android:textSize="14dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/txt_TV"
-                app:layout_constraintTop_toBottomOf="@+id/et_to_date" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_search" />
 
             <TextView
                 android:id="@+id/txt_TA"
@@ -207,7 +196,26 @@
                 android:textColor="@color/yellow"
                 android:textSize="14dp"
                 app:layout_constraintStart_toEndOf="@+id/txt_TotalAmount"
-                app:layout_constraintTop_toBottomOf="@+id/et_to_date" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_search" />
+
+            <Button
+                android:id="@+id/btn_search"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/rectangle_button"
+                android:text="Search"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_date_from" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 

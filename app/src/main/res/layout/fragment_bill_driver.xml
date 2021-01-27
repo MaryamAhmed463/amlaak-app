@@ -51,21 +51,21 @@
                 android:layout_height="35dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:background="@drawable/rectangle_white"
+                android:clickable="true"
                 android:ems="10"
+                android:focusable="false"
+                android:imeOptions="actionNext"
                 android:inputType="textPersonName"
                 android:paddingLeft="20dp"
                 android:textColor="@color/text_gray"
                 android:textSize="12dp"
-                android:clickable="true"
-                android:focusable="false"
-                android:imeOptions="actionNext"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sp_vehicleCode" />
+                app:layout_constraintTop_toBottomOf="@+id/txt_errordate" />
 
             <TextView
                 android:id="@+id/txt_FuelType"
@@ -252,7 +252,7 @@
                 android:layout_marginRight="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_km" />
+                app:layout_constraintTop_toBottomOf="@+id/et_km_number" />
 
             <TextView
                 android:id="@+id/txt_paymeny"
@@ -325,6 +325,39 @@
                 app:layout_constraintBottom_toBottomOf="@+id/sp_paymentMethod"
                 app:layout_constraintEnd_toEndOf="@+id/sp_paymentMethod"
                 app:layout_constraintTop_toTopOf="@+id/sp_paymentMethod" />
+
+            <TextView
+                android:id="@+id/txt_errordate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textColor="#FF0000"
+                android:textSize="12dp"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sp_vehicleCode" />
+
+            <EditText
+                android:id="@+id/et_km_number"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/rectangle_white"
+                android:ems="10"
+                android:hint="km"
+                android:inputType="numberDecimal"
+                android:paddingLeft="20dp"
+                android:textSize="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_km" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

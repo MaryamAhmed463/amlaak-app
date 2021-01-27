@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/confirmation"
+        android:icon="@drawable/confirm_ic"
+        android:title="Confirmation" />
+
+    <item
+        android:id="@+id/mang_report_h"
+        android:icon="@drawable/report_ic"
+        android:title="Header Reports" />
+    <item
+        android:id="@+id/mang_report_d"
+        android:icon="@drawable/report_ic"
+        android:title="Detail Reports" />
+
+</menu>
