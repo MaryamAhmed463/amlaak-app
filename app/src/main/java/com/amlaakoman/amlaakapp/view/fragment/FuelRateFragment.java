@@ -102,13 +102,13 @@ public class FuelRateFragment extends Fragment {
     }
 
     private void updateLabel_from() {
-        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        String myFormat = "yyyy/MM/dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         et_date_from.setText(sdf.format(calendar.getTime()));
     }
     private void updateLabel_to() {
-        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        String myFormat = "yyyy/MM/dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         et_date_to.setText(sdf.format(calendar.getTime()));
@@ -241,7 +241,7 @@ public class FuelRateFragment extends Fragment {
                 }
 
                 //check date from is before to date and date to after date from
-                dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+                dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
                 Date fromDate = new Date();
                 Date toDate = new Date();
                 try {

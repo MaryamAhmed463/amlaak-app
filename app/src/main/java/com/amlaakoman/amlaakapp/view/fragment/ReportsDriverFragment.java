@@ -114,14 +114,14 @@ public class ReportsDriverFragment extends Fragment {
     }
 
     private void updateLabel_from() {
-        String myFormat = "dd/MM/yy"; //In which you need put here
+        String myFormat = "yyyy/MM/dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         et_date_from.setText(sdf.format(calendar.getTime()));
     }
 
     private void updateLabel_to() {
-        String myFormat = "dd/MM/yy"; //In which you need put here
+        String myFormat = "yyyy/MM/dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         et_date_to.setText(sdf.format(calendar.getTime()));

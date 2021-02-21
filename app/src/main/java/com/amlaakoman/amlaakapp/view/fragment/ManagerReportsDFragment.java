@@ -201,6 +201,21 @@ public class ManagerReportsDFragment extends Fragment {
         };
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
+        }
+    }
+
     public interface OnFragmentInteractionListener {
+
     }
 }

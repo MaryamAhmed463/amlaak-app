@@ -117,6 +117,13 @@ public class ManagerReportsHFragment extends Fragment {
         transaction.addToBackStack(null);
         transaction.commit();
 
+        btn_omanOil.setBackground(getResources().getDrawable(R.drawable.tab_bkg));
+        btn_omanOil.setTextColor(getResources().getColor(R.color.white));
+        btn_shell.setBackground(getResources().getDrawable(R.drawable.tab_bkg_center_white));
+        btn_shell.setTextColor(getResources().getColor(R.color.dark_blue));
+        btn_almaha.setBackground(getResources().getDrawable(R.drawable.tab_bkg_right_white));
+        btn_almaha.setTextColor(getResources().getColor(R.color.dark_blue));
+
         btn_omanOil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -195,5 +202,19 @@ public class ManagerReportsHFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
+        }
     }
 }

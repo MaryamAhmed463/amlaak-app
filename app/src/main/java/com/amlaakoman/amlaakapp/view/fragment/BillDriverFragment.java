@@ -147,7 +147,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
 
             if (!TextUtils.isEmpty(et_volume.getText().toString().trim())) {
 
-                Double answer = Double.parseDouble(et_volume.getText().toString()) * Double.parseDouble(unitPrice);
+                Double answer = Double.valueOf(et_volume.getText().toString()) * Double.valueOf(unitPrice);
                 Log.e("RESULT", String.valueOf(answer));
                 double number1 = answer;
                 DecimalFormat numberFormat1 = new DecimalFormat("###.000");
@@ -196,14 +196,14 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
     private double H_km, span, kmPerLiter;
 
     private void updateLabel() {
-        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        String myFormat = "yyyy/MM/dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         et_currentDate.setText(sdf.format(calendar.getTime()));
 
         String dates = et_currentDate.getText().toString();
         String[] items1 = dates.split("/");
         final String m1 = items1[1];
-        final String y1 = items1[2];
+        final String y1 = items1[0];
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("FuleRate");
@@ -218,7 +218,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                     String fd = fuleRate.getDate_from();
                     String[] items1 = fd.split("/");
                     String m2 = items1[1];
-                    String y2 = items1[2];
+                    String y2 = items1[0];
 
                     if (!m1.equals(m2) && !y1.equals(y2)) {
                         txt_errDate.setVisibility(View.VISIBLE);
@@ -396,6 +396,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                 myRef2.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+                        kmArrayList.clear();
                         for (DataSnapshot postdataSnapshot : dataSnapshot.getChildren()) {
                             Invoice invoice = postdataSnapshot.getValue(Invoice.class);
                             if (invoice.getvCode().equals(vehicleItem)) {
@@ -404,14 +405,19 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                             }
                         }
 
-                        for (int i = 0; i < kmArrayList.size(); i++) {
+                        if (kmArrayList.size() == 0) {
+                            H_km = 0.0;
+                        } else {
                             H_km = kmArrayList.get(0);
-                            if (H_km < kmArrayList.indexOf(i)) {
-                                H_km = kmArrayList.get(0);
-                                Toast.makeText(getActivity(), String.valueOf(H_km), Toast.LENGTH_LONG).show();
+                            for (int i = 0; i < kmArrayList.size(); i++) {
+                                if (kmArrayList.get(i) > H_km) {
+                                    H_km = kmArrayList.get(i);
+                                    //Toast.makeText(getActivity(), String.valueOf(H_km), Toast.LENGTH_LONG).show();
 
+                                }
                             }
                         }
+
                     }
 
                     @Override
@@ -435,7 +441,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
 
 
         Date c = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
         String formattedDate = df.format(c);
         et_currentDate.setText(formattedDate);
 
@@ -609,8 +615,15 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                                                                 invoice.setDID(" ");
                                                                 invoice.setConfirmation("Pending");
                                                                 invoice.setVkm(Double.valueOf(km));
-                                                                span = Double.valueOf(km) - H_km;
-                                                                invoice.setKm_span(span);
+                                                                if (H_km != 0.0) {
+                                                                    span = 0.0;
+                                                                    span = Double.valueOf(km) - H_km;
+                                                                    invoice.setKm_span(span);
+                                                                } else {
+                                                                    span = 0.0;
+                                                                    invoice.setKm_span(span);
+                                                                }
+
 
                                                                 kmPerLiter = span / Double.valueOf(volume);
 
@@ -711,7 +724,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
 
                     }
                 } else {
-                    Toast.makeText(getActivity(), "You have to attach receipt and km", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "You have to attach receipt and km reading", Toast.LENGTH_LONG).show();
                     myProgressDialog.dismissDialog();
                 }
 
@@ -725,9 +738,9 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
         ////////////checking fuel type///////////////////
         String currentDate = et_currentDate.getText().toString();
         String[] items1 = currentDate.split("/");
-        String d1 = items1[0];
+        String d1 = items1[2];
         final String m1 = items1[1];
-        final String y1 = items1[2];
+        final String y1 = items1[0];
         int d = Integer.parseInt(d1);
         final int m = Integer.parseInt(m1);
         final int y = Integer.parseInt(y1);
@@ -744,9 +757,9 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
 
                     String fd = fuleRate.getDate_from();
                     String[] items1 = fd.split("/");
-                    String d2 = items1[0];
+                    String d2 = items1[2];
                     String m2 = items1[1];
-                    String y2 = items1[2];
+                    String y2 = items1[0];
 
                     int from_d = Integer.parseInt(d2);
                     int from_m = Integer.parseInt(m2);
@@ -926,7 +939,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                 Bundle bundle = data.getExtras();
                 bitmap = (Bitmap) bundle.get("data");
                 // img_attachRecipt.setImageBitmap(bitmap);
-                et_recipt.setText("attached done");
+                et_recipt.setText("Invoice attached done");
                 et_recipt.setTextColor(this.getResources().getColor(R.color.green));
 
             }
@@ -937,7 +950,7 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
                 Bundle bundle1 = data.getExtras();
                 bitmap1 = (Bitmap) bundle1.get("data");
                 // img_attachRecipt.setImageBitmap(bitmap);
-                et_km.setText("km done");
+                et_km.setText("KM attached done");
                 et_km.setTextColor(this.getResources().getColor(R.color.green));
 
             }
@@ -1017,3 +1030,4 @@ public class BillDriverFragment extends Fragment implements OnMapReadyCallback {
     }
 
 }
+

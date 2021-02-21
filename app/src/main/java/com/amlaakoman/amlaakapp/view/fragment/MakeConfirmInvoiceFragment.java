@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -149,6 +150,9 @@ public class MakeConfirmInvoiceFragment extends Fragment {
                         .child(invoiceID)
                         .child("confirmation")
                         .setValue("Confirm");
+
+                Toast.makeText(mContext, "Invoice was confirmed", Toast.LENGTH_LONG).show();
+
             }
         });
 

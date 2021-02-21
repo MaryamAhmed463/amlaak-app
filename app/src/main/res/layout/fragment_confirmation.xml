@@ -24,5 +24,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header" />
 
+    <ImageView
+        android:id="@+id/img_noRecord"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="?android:attr/actionModeFindDrawable"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/rv_invoiceConfirmation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_invoiceConfirmation" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

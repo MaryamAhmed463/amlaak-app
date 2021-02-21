@@ -276,7 +276,6 @@ public class UsersFragment extends Fragment implements DisplayUsersAdapter.UserS
     public void onUserSelected(final User selecteUser) {
         preSelvehicleList.clear();
         readVehicleReference(selecteUser);
-
     }
 
     private void showDialog(final User selecteUser, final String vehiclesList, final List vlist) {

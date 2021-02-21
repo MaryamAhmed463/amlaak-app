@@ -19,12 +19,21 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.amlaakoman.amlaakapp.R;
+import com.amlaakoman.amlaakapp.model.Invoice;
+import com.amlaakoman.amlaakapp.view.adapter.AlmahaReportDetailsAdapter;
+import com.amlaakoman.amlaakapp.view.adapter.ShellReportDetailAdapter;
+import com.amlaakoman.amlaakapp.view.fragment.AlmahaRDFragment;
+import com.amlaakoman.amlaakapp.view.fragment.AlmahaRHFragment;
 import com.amlaakoman.amlaakapp.view.fragment.ConfirmationFragment;
 import com.amlaakoman.amlaakapp.view.fragment.MakeConfirmInvoiceFragment;
 import com.amlaakoman.amlaakapp.view.fragment.ManagerMainFragment;
 import com.amlaakoman.amlaakapp.view.fragment.ManagerReportsDFragment;
 import com.amlaakoman.amlaakapp.view.fragment.ManagerReportsHFragment;
+import com.amlaakoman.amlaakapp.view.fragment.OmanOilDetailsFragment;
 import com.amlaakoman.amlaakapp.view.fragment.OmanOilRDFragment;
+import com.amlaakoman.amlaakapp.view.fragment.OmanOilRHFragment;
+import com.amlaakoman.amlaakapp.view.fragment.ShellRDFragment;
+import com.amlaakoman.amlaakapp.view.fragment.ShellRHFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -34,7 +43,15 @@ public class ManagerMainActivity extends AppCompatActivity implements
         ManagerReportsHFragment.OnFragmentInteractionListener,
         ConfirmationFragment.OnFragmentInteractionListener,
         ManagerReportsDFragment.OnFragmentInteractionListener,
-        OmanOilRDFragment.OnFragmentInteractionListener {
+        OmanOilRDFragment.OnFragmentInteractionListener,
+        ShellRDFragment.OnFragmentInteractionListener,
+        AlmahaRDFragment.OnFragmentInteractionListener,
+        ShellReportDetailAdapter.OnFragmentInteractionListener,
+        OmanOilDetailsFragment.OnFragmentInteractionListener,
+        AlmahaReportDetailsAdapter.OnFragmentInteractionListener,
+        OmanOilRHFragment.OnFragmentInteractionListener,
+        ShellRHFragment.OnFragmentInteractionListener,
+        AlmahaRHFragment.OnFragmentInteractionListener {
 
     private Toolbar toolbar;
 
@@ -89,7 +106,13 @@ public class ManagerMainActivity extends AppCompatActivity implements
         Fragment currentFragment = (Fragment) fragments.get(fragments.size() - 1);
 
         if (currentFragment instanceof ManagerReportsHFragment ||
-                currentFragment instanceof ConfirmationFragment) {
+                currentFragment instanceof ConfirmationFragment ||
+                currentFragment instanceof OmanOilRHFragment ||
+                currentFragment instanceof OmanOilRDFragment ||
+                currentFragment instanceof ShellRHFragment ||
+                currentFragment instanceof ShellRDFragment ||
+                currentFragment instanceof AlmahaRHFragment ||
+                currentFragment instanceof AlmahaRDFragment) {
 
             final Dialog dialog = new Dialog(ManagerMainActivity.this);
             dialog.setContentView(R.layout.custom_dialoge_exit);
@@ -120,8 +143,12 @@ public class ManagerMainActivity extends AppCompatActivity implements
                     dialog.dismiss();
                 }
             });
+
             dialog.show();
         } else if (currentFragment instanceof MakeConfirmInvoiceFragment) {
+            fragment = ManagerMainFragment.newInstance(null, null);
+            //getSupportActionBar().show();
+        } else if (currentFragment instanceof OmanOilDetailsFragment) {
             fragment = ManagerMainFragment.newInstance(null, null);
             //getSupportActionBar().show();
         } else {
@@ -138,4 +165,8 @@ public class ManagerMainActivity extends AppCompatActivity implements
         onBackPressed();
     }
 
+    @Override
+    public void onFragmentInteraction(Invoice selecteInvoice) {
+
+    }
 }

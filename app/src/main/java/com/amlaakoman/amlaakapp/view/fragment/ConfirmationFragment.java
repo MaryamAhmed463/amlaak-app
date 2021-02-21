@@ -55,6 +55,8 @@ public class ConfirmationFragment extends Fragment implements ConfirmationAdapte
     private ArrayList<Invoice> invoiceArrayList = new ArrayList<>();
     private RecyclerView.Adapter adapter;
 
+    private ImageView img_noData;
+
     private MyProgressDialog myProgressDialog;
     private OnFragmentInteractionListener mListener;
 
@@ -130,6 +132,7 @@ public class ConfirmationFragment extends Fragment implements ConfirmationAdapte
         });
 
         recyclerView = view.findViewById(R.id.rv_invoiceConfirmation);
+        img_noData = view.findViewById(R.id.img_noRecord);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Invoice");
@@ -144,15 +147,31 @@ public class ConfirmationFragment extends Fragment implements ConfirmationAdapte
                         Collections.reverse(invoiceArrayList);
                         invoiceArrayList.add(invoice);
                         Collections.reverse(invoiceArrayList);
+                        img_noData.setVisibility(View.INVISIBLE);
+                    } else {
+                        img_noData.setVisibility(View.VISIBLE);
                     }
                 }
-                adapter = new ConfirmationAdapter(getContext(), invoiceArrayList, ConfirmationFragment.this);
-                recyclerView.setAdapter(adapter);
+                if (invoiceArrayList.size() > 0) {
+                    img_noData.setVisibility(View.INVISIBLE);
+                    adapter = new ConfirmationAdapter(getContext(), invoiceArrayList, ConfirmationFragment.this);
+                    recyclerView.setAdapter(adapter);
 
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                recyclerView.setLayoutManager(linearLayoutManager);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(linearLayoutManager);
 
-                myProgressDialog.dismissDialog();
+                    myProgressDialog.dismissDialog();
+                } else {
+                    img_noData.setVisibility(View.VISIBLE);
+                    adapter = new ConfirmationAdapter(getContext(), invoiceArrayList, ConfirmationFragment.this);
+                    recyclerView.setAdapter(adapter);
+
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(linearLayoutManager);
+
+                    myProgressDialog.dismissDialog();
+                }
+
             }
 
             @Override
@@ -228,5 +247,19 @@ public class ConfirmationFragment extends Fragment implements ConfirmationAdapte
 
 
     public interface OnFragmentInteractionListener {
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
+        }
     }
 }

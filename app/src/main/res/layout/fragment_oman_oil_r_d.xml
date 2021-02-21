@@ -39,4 +39,16 @@
         app:layout_constraintEnd_toStartOf="@+id/img_search"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/img_noData"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="?android:attr/actionModeFindDrawable"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/rv_omanOilRD"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_omanOilRD" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

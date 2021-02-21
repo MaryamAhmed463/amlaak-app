@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,7 +47,7 @@ public class OmanOilReportDetailsAdapter extends RecyclerView.Adapter<OmanOilRep
     }
 
     @Override
-    public void onBindViewHolder(@NonNull OmanOilReportDetailsAdapter.ViewHolder holder, int i) {
+    public void onBindViewHolder(@NonNull OmanOilReportDetailsAdapter.ViewHolder holder, final int i) {
         invoice = invoiceArrayList.get(i);
 
         holder.txt_VCode.setText(invoice.getvCode());
@@ -58,6 +59,14 @@ public class OmanOilReportDetailsAdapter extends RecyclerView.Adapter<OmanOilRep
         holder.txt_km.setText(String.valueOf(invoice.getVkm()));
         holder.txt_span.setText(String.valueOf(invoice.getKm_span()));
         holder.txt_kmperliter.setText(String.valueOf(invoice.getKm_perLitre()));
+
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Invoice invoice = invoiceArrayList.get(i);
+                mInvoiceListner.onInvoiceSelected(invoice);
+            }
+        });
 
     }
 
@@ -78,6 +87,8 @@ public class OmanOilReportDetailsAdapter extends RecyclerView.Adapter<OmanOilRep
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView txt_VCode, txt_Date, txt_FuelType, txt_Qty, txt_UnitPrice, txt_amount, txt_km, txt_span, txt_kmperliter;
 
+        CardView cardView;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -90,6 +101,7 @@ public class OmanOilReportDetailsAdapter extends RecyclerView.Adapter<OmanOilRep
             txt_km = itemView.findViewById(R.id.txt_kmValue);
             txt_span = itemView.findViewById(R.id.txt_span_value);
             txt_kmperliter = itemView.findViewById(R.id.txt_kmperlitrevalue);
+            cardView = itemView.findViewById(R.id.cv_invoice_detail);
 
         }
     }

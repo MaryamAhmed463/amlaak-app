@@ -8,6 +8,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,13 +24,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,6 +48,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.itextpdf.io.IOException;
 import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.Color;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
@@ -53,10 +57,13 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.TextAlignment;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -97,6 +104,10 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
     private ImageView img_search, img_export;
     private SimpleDateFormat dateFormat;
     private MyProgressDialog myProgressDialog;
+
+    private ImageView img_noData;
+
+    private String dateFrom, dateTo;
 
     public OmanOilRDFragment() {
         // Required empty public constructor
@@ -145,7 +156,7 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
         recyclerView = view.findViewById(R.id.rv_omanOilRD);
         img_search = view.findViewById(R.id.img_search);
         img_export = view.findViewById(R.id.img_export);
-
+        img_noData = view.findViewById(R.id.img_noData);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Invoice");
@@ -154,18 +165,32 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postdataSnapshot : dataSnapshot.getChildren()) {
                     Invoice invoice = postdataSnapshot.getValue(Invoice.class);
-                    if (invoice.getStation().equals("Oman Oil")) {
-                        invoicesArrayList.add(invoice);
+                    if (invoice.getConfirmation().equals("Confirm")) {
+                        if (invoice.getStation().equals("Oman Oil")) {
+                            invoicesArrayList.add(invoice);
+                        }
                     }
 
+
                 }
-                omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
-                recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                if (invoicesArrayList.size() > 0) {
+                    img_noData.setVisibility(View.INVISIBLE);
 
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                recyclerView.setLayoutManager(linearLayoutManager);
+                    omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
+                    recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(linearLayoutManager);
+                    myProgressDialog.dismissDialog();
+                } else {
+                    img_noData.setVisibility(View.VISIBLE);
+                    invoicesArrayList.clear();
 
-                myProgressDialog.dismissDialog();
+                    omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
+                    recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(linearLayoutManager);
+                    myProgressDialog.dismissDialog();
+                }
             }
 
             @Override
@@ -236,12 +261,13 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
                         calendar.set(Calendar.MONTH, monthOfYear);
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                        String myFormat = "dd/MM/yyyy"; //In which you need put here
+                        String myFormat = "yyyy/MM/dd"; //In which you need put here
                         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
                         et_dateFrom.setText(sdf.format(calendar.getTime()));
                     }
 
                 };
+
                 final DatePickerDialog.OnDateSetListener date_to = new DatePickerDialog.OnDateSetListener() {
 
                     @Override
@@ -252,7 +278,7 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
                         calendar.set(Calendar.MONTH, monthOfYear);
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                        String myFormat = "dd/MM/yyyy"; //In which you need put here
+                        String myFormat = "yyyy/MM/dd"; //In which you need put here
                         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
                         et_dateTo.setText(sdf.format(calendar.getTime()));
 
@@ -270,6 +296,7 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
                                 calendar.get(Calendar.DAY_OF_MONTH)).show();
                     }
                 });
+
                 et_dateTo.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -280,11 +307,14 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
                     }
                 });
 
-
                 search.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         invoicesArrayList.clear();
+                        dateFrom = et_dateFrom.getText().toString();
+                        dateTo = et_dateTo.getText().toString();
+
+                        //Toast.makeText(getContext(),et_dateFrom.getText().toString().length() , Toast.LENGTH_LONG).show();
                         if (vehicleItem.equals("All") && driverItem.equals("All")) {
 
                             invoicesArrayList.clear();
@@ -296,18 +326,33 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     for (DataSnapshot post : dataSnapshot.getChildren()) {
                                         Invoice invoice = post.getValue(Invoice.class);
-
-                                        Collections.reverse(invoicesArrayList);
-                                        invoicesArrayList.add(invoice);
-                                        Collections.reverse(invoicesArrayList);
-
+                                        if (invoice.getConfirmation().equals("Confirm")) {
+                                            if (invoice.getStation().equals("Oman Oil")) {
+                                                Collections.reverse(invoicesArrayList);
+                                                invoicesArrayList.add(invoice);
+                                                Collections.reverse(invoicesArrayList);
+                                            }
+                                        }
                                     }
 
-                                    omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
-                                    recyclerView.setAdapter(omanOilReportDetailsAdapter);
-                                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                                    recyclerView.setLayoutManager(linearLayoutManager);
-                                    myProgressDialog.dismissDialog();
+                                    if (invoicesArrayList.size() > 0) {
+                                        img_noData.setVisibility(View.INVISIBLE);
+
+                                        omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
+                                        recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                        recyclerView.setLayoutManager(linearLayoutManager);
+                                        myProgressDialog.dismissDialog();
+                                    } else {
+                                        img_noData.setVisibility(View.VISIBLE);
+                                        invoicesArrayList.clear();
+
+                                        omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
+                                        recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                        recyclerView.setLayoutManager(linearLayoutManager);
+                                        myProgressDialog.dismissDialog();
+                                    }
                                 }
 
 
@@ -328,18 +373,36 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
                                     for (DataSnapshot post : dataSnapshot.getChildren()) {
                                         Invoice invoice = post.getValue(Invoice.class);
 
-                                        if (invoice.getvCode().equals(vehicleItem)) {
-                                            Collections.reverse(invoicesArrayList);
-                                            invoicesArrayList.add(invoice);
-                                            Collections.reverse(invoicesArrayList);
+                                        if (invoice.getConfirmation().equals("Confirm")) {
+                                            if (invoice.getStation().equals("Oman Oil")) {
+                                                if (invoice.getvCode().equals(vehicleItem)) {
+                                                    Collections.reverse(invoicesArrayList);
+                                                    invoicesArrayList.add(invoice);
+                                                    Collections.reverse(invoicesArrayList);
+                                                }
+                                            }
                                         }
+
                                     }
 
-                                    omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
-                                    recyclerView.setAdapter(omanOilReportDetailsAdapter);
-                                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                                    recyclerView.setLayoutManager(linearLayoutManager);
-                                    myProgressDialog.dismissDialog();
+                                    if (invoicesArrayList.size() > 0) {
+                                        img_noData.setVisibility(View.INVISIBLE);
+
+                                        omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
+                                        recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                        recyclerView.setLayoutManager(linearLayoutManager);
+                                        myProgressDialog.dismissDialog();
+                                    } else {
+                                        img_noData.setVisibility(View.VISIBLE);
+                                        invoicesArrayList.clear();
+
+                                        omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
+                                        recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                        recyclerView.setLayoutManager(linearLayoutManager);
+                                        myProgressDialog.dismissDialog();
+                                    }
                                 }
 
 
@@ -360,18 +423,37 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
                                     for (DataSnapshot post : dataSnapshot.getChildren()) {
                                         Invoice invoice = post.getValue(Invoice.class);
 
-                                        if (invoice.getDSN().equals(driver[1])) {
-                                            Collections.reverse(invoicesArrayList);
-                                            invoicesArrayList.add(invoice);
-                                            Collections.reverse(invoicesArrayList);
+                                        if (invoice.getConfirmation().equals("Confirm")) {
+                                            if (invoice.getStation().equals("Oman Oil")) {
+                                                if (invoice.getDSN().equals(driver[1])) {
+                                                    Collections.reverse(invoicesArrayList);
+                                                    invoicesArrayList.add(invoice);
+                                                    Collections.reverse(invoicesArrayList);
+
+                                                }
+                                            }
                                         }
+
                                     }
 
-                                    omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
-                                    recyclerView.setAdapter(omanOilReportDetailsAdapter);
-                                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                                    recyclerView.setLayoutManager(linearLayoutManager);
-                                    myProgressDialog.dismissDialog();
+                                    if (invoicesArrayList.size() > 0) {
+                                        img_noData.setVisibility(View.INVISIBLE);
+
+                                        omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
+                                        recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                        recyclerView.setLayoutManager(linearLayoutManager);
+                                        myProgressDialog.dismissDialog();
+                                    } else {
+                                        img_noData.setVisibility(View.VISIBLE);
+                                        invoicesArrayList.clear();
+
+                                        omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
+                                        recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                        recyclerView.setLayoutManager(linearLayoutManager);
+                                        myProgressDialog.dismissDialog();
+                                    }
                                 }
 
 
@@ -392,21 +474,38 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
                                     for (DataSnapshot post : dataSnapshot.getChildren()) {
                                         Invoice invoice = post.getValue(Invoice.class);
 
-                                        if (invoice.getDSN().equals(driver[1])) {
-                                            if (invoice.getvCode().equals(vehicleItem)) {
-                                                Collections.reverse(invoicesArrayList);
-                                                invoicesArrayList.add(invoice);
-                                                Collections.reverse(invoicesArrayList);
+                                        if (invoice.getConfirmation().equals("Confirm")) {
+                                            if (invoice.getStation().equals("Oman Oil")) {
+                                                if (invoice.getDSN().equals(driver[1])) {
+                                                    if (invoice.getvCode().equals(vehicleItem)) {
+                                                        Collections.reverse(invoicesArrayList);
+                                                        invoicesArrayList.add(invoice);
+                                                        Collections.reverse(invoicesArrayList);
+                                                    }
+                                                }
                                             }
-
                                         }
+
                                     }
 
-                                    omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
-                                    recyclerView.setAdapter(omanOilReportDetailsAdapter);
-                                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                                    recyclerView.setLayoutManager(linearLayoutManager);
-                                    myProgressDialog.dismissDialog();
+                                    if (invoicesArrayList.size() > 0) {
+                                        img_noData.setVisibility(View.INVISIBLE);
+
+                                        omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
+                                        recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                        recyclerView.setLayoutManager(linearLayoutManager);
+                                        myProgressDialog.dismissDialog();
+                                    } else {
+                                        img_noData.setVisibility(View.VISIBLE);
+                                        invoicesArrayList.clear();
+
+                                        omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
+                                        recyclerView.setAdapter(omanOilReportDetailsAdapter);
+                                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                        recyclerView.setLayoutManager(linearLayoutManager);
+                                        myProgressDialog.dismissDialog();
+                                    }
                                 }
 
 
@@ -415,42 +514,7 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
 
                                 }
                             });
-                        } else if (et_dateFrom.getText().toString().equals("") && et_dateTo.getText().toString().equals("")) {
-                            Toast.makeText(getContext(), "This email is already used", Toast.LENGTH_SHORT).show();
 
-                            final String[] driver = driverItem.split(" ");
-                            invoicesArrayList.clear();
-
-                            dbrefSearch = FirebaseDatabase.getInstance().getReference("Invoice");
-                            dbrefSearch.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot post : dataSnapshot.getChildren()) {
-                                        Invoice invoice = post.getValue(Invoice.class);
-
-                                        if (invoice.getDSN().equals(driver[1])) {
-                                            if (invoice.getvCode().equals(vehicleItem)) {
-                                                Collections.reverse(invoicesArrayList);
-                                                invoicesArrayList.add(invoice);
-                                                Collections.reverse(invoicesArrayList);
-                                            }
-
-                                        }
-                                    }
-
-                                    omanOilReportDetailsAdapter = new OmanOilReportDetailsAdapter(invoicesArrayList, getActivity(), OmanOilRDFragment.this);
-                                    recyclerView.setAdapter(omanOilReportDetailsAdapter);
-                                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                                    recyclerView.setLayoutManager(linearLayoutManager);
-                                    myProgressDialog.dismissDialog();
-                                }
-
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
                         }
 
                         dialogs.dismiss();
@@ -514,47 +578,54 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
             PdfDocument pdfDocument = new PdfDocument(writer);
             Document layoutDocument = new Document(pdfDocument);
 
-
             PdfFont rowFontBold = PdfFontFactory.createFont(StandardFonts.TIMES_BOLD);
             PdfFont rowFont = PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN);
             float rowFontSize = 8.0f;
 
-            Paragraph comName = new Paragraph("AMLAAK ENERGY RESOURCE LLC");
-            comName.setFont(rowFont);
-            comName.setFontSize(10);
-            Color myColor2 = new DeviceRgb(0, 51, 102);
-            comName.setFontColor(myColor2);
-            layoutDocument.add(comName.setBold().setTextAlignment(TextAlignment.LEFT));
+            //Header
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo_header);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] bitmapdata = stream.toByteArray();
+
+            ImageData imageData1 = ImageDataFactory.create(bitmapdata);
+            Image image = new Image(imageData1);
+            layoutDocument.add(image.setHeight(35).setWidth(530));
 
             //Document Date
             Date c = Calendar.getInstance().getTime();
-            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
             String formattedDate = df.format(c);
-            Paragraph docDate = new Paragraph(formattedDate + "\n\n\n");
+            Paragraph docDate = new Paragraph("\nDate: " + formattedDate + "\n\n");
             docDate.setFont(rowFont);
-            layoutDocument.add(docDate.setBold().setTextAlignment(TextAlignment.LEFT));
+            Color dateColor = new DeviceRgb(255, 0, 0);
+            docDate.setFontColor(dateColor);
+            layoutDocument.add(docDate.setBold().setUnderline().setTextAlignment(TextAlignment.LEFT));
 
 
             //Document Name
-            Paragraph docTitle = new Paragraph("Oman Oil Invoices Details Report");
+            Paragraph docTitle = new Paragraph("Oman Oil Invoices Details Report From " + dateFrom + " To " + dateTo + "\n\n");
             docTitle.setFont(rowFont);
+            docTitle.setFontSize(16);
             Color myColor = new DeviceRgb(0, 102, 204);
             docTitle.setFontColor(myColor);
-            layoutDocument.add(docTitle.setBold().setUnderline().setTextAlignment(TextAlignment.CENTER));
+            layoutDocument.add(docTitle.setBold().setTextAlignment(TextAlignment.CENTER));
 
 
-            Table table1 = new Table(new float[]{2, 2, 2, 3, 3, 3, 3, 3, 3}).useAllAvailableWidth().setFixedLayout();
+            Table table1 = new Table(new float[]{3, 3, 2, 3, 3, 3, 3, 3, 3}).useAllAvailableWidth().setFixedLayout();
 
             //Table Header
-            table1.addCell(new Paragraph("Date").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize));
-            table1.addCell(new Paragraph("Vehicle Code").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize));
-            table1.addCell(new Paragraph("Fuel Type").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize));
-            table1.addCell(new Paragraph("Quantity(Litre)").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize));
-            table1.addCell(new Paragraph("Unit Price(R.O)").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize));
-            table1.addCell(new Paragraph("Amount(R.O)").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize));
-            table1.addCell(new Paragraph("KM Reading").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize));
-            table1.addCell(new Paragraph("KM Span").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize));
-            table1.addCell(new Paragraph("KM/Litre").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize));
+            Color cellbkg = new DeviceRgb(143, 33, 102);
+            Color fontWhite = new DeviceRgb(255, 255, 255);
+            table1.addCell(new Paragraph("Date").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize).setBackgroundColor(cellbkg).setFontColor(fontWhite).setBorder(Border.NO_BORDER));
+            table1.addCell(new Paragraph("Vehicle Code").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize).setBackgroundColor(cellbkg).setFontColor(fontWhite).setBorder(Border.NO_BORDER));
+            table1.addCell(new Paragraph("Fuel Type").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize).setBackgroundColor(cellbkg).setFontColor(fontWhite).setBorder(Border.NO_BORDER));
+            table1.addCell(new Paragraph("Quantity(Litre)").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize).setBackgroundColor(cellbkg).setFontColor(fontWhite).setBorder(Border.NO_BORDER));
+            table1.addCell(new Paragraph("Unit Price(R.O)").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize).setBackgroundColor(cellbkg).setFontColor(fontWhite).setBorder(Border.NO_BORDER));
+            table1.addCell(new Paragraph("Amount(R.O)").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize).setBackgroundColor(cellbkg).setFontColor(fontWhite).setBorder(Border.NO_BORDER));
+            table1.addCell(new Paragraph("KM Reading").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize).setBackgroundColor(cellbkg).setFontColor(fontWhite).setBorder(Border.NO_BORDER));
+            table1.addCell(new Paragraph("KM Span").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize).setBackgroundColor(cellbkg).setFontColor(fontWhite).setBorder(Border.NO_BORDER));
+            table1.addCell(new Paragraph("KM/Litre").setFont(rowFontBold).setTextAlignment(TextAlignment.CENTER).setFontSize(rowFontSize).setBackgroundColor(cellbkg).setFontColor(fontWhite).setBorder(Border.NO_BORDER));
 
 
             //Table Records
@@ -575,7 +646,16 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
 
             layoutDocument.add(table1);
 
+            //footer
+            Bitmap bitmapf = BitmapFactory.decodeResource(getResources(), R.drawable.footer);
+            ByteArrayOutputStream streamf = new ByteArrayOutputStream();
+            bitmapf.compress(Bitmap.CompressFormat.JPEG, 100, streamf);
+            byte[] bitmapdataf = streamf.toByteArray();
 
+            ImageData imageDataf = ImageDataFactory.create(bitmapdataf);
+            Image imagef = new Image(imageDataf);
+
+            layoutDocument.add(imagef.setHeight(35).setWidth(530).setFixedPosition(30, 10));
             layoutDocument.close();
 
         } catch (IOException e) {
@@ -805,7 +885,14 @@ public class OmanOilRDFragment extends Fragment implements OmanOilReportDetailsA
 
     @Override
     public void onInvoiceSelected(Invoice invoice) {
+        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        OmanOilDetailsFragment detailsFragment = OmanOilDetailsFragment.newInstance(null, null);
+        fragmentTransaction.replace(R.id.manager_main_container, detailsFragment);
+        fragmentTransaction.commit();
 
+        Bundle bundle = new Bundle();
+        bundle.putString("invoiceId", invoice.getInvoiceID());
+        detailsFragment.setArguments(bundle);
     }
 
     @Override
